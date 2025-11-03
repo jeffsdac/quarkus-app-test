@@ -18,7 +18,7 @@ COPY src src
 
 USER root
 # Faz o build nativo
-RUN ./mvnw package -Pnative -Dquarkus.native.container-build=true
+RUN ./mvnw package -Pnative
 USER 1001
 
 FROM registry.access.redhat.com/ubi8-minimal
