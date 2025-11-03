@@ -1,0 +1,32 @@
+FROM quay.io/quarkus/ubi-quarkus-native-image:22.3-java17 AS build
+
+WORKDIR /project
+
+# Copia os arquivos necessários do Maven Wrapper
+COPY mvnw .
+COPY .mvn .mvn
+
+# Copia o pom.xml antes do código-fonte (para cache de dependências)
+COPY pom.xml .
+
+USER root
+# Baixa dependências (cache eficiente)
+RUN chmod +x mvnw && ./mvnw dependency:go-offline
+USER 1001
+# Copia o código-fonte do projeto
+COPY src src
+
+USER root
+# Faz o build nativo
+RUN ./mvnw package -Pnative -Dquarkus.native.container-build=true
+USER 1001
+
+FROM registry.access.redhat.com/ubi8-minimal
+
+WORKDIR /app
+
+COPY --from=build /project/target/*-runner /app/application
+
+EXPOSE 8080
+USER 1001
+ENTRYPOINT ["./application"]
