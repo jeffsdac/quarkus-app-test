@@ -12,7 +12,7 @@ COPY .mvn .mvn
 
 # Copia o pom.xml (para cache de dependências)
 COPY pom.xml .
-USER ROOT
+USER root
 # Baixa dependências (cache eficiente)
 RUN chmod +x mvnw && ./mvnw dependency:go-offline
 USER 1001
