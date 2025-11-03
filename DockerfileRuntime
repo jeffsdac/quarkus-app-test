@@ -1,0 +1,9 @@
+FROM registry.access.redhat.com/ubi8-minimal
+
+WORKDIR /app
+
+COPY --from=build /project/target/*-runner /app/application
+
+EXPOSE 8080
+
+ENTRYPOINT ["./application"]
